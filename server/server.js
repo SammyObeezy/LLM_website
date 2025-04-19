@@ -6,28 +6,33 @@ import { clerkWebhooks } from './controllers/webhooks.js'
 import educatorRouter from './routes/educatorRoutes.js'
 import { clerkMiddleware } from '@clerk/express'
 
-// Intialize Express
-
+// Initialize Express
 const app = express()
 
 // Connect to DB
 await connectDB()
 
+// CORS Middleware - allow specific origin
+const corsOptions = {
+    origin: "http://localhost:5173",  // Allow requests from localhost:5173
+    methods: ["GET", "POST"],        // Allow specific methods (optional)
+    allowedHeaders: ["Content-Type"], // Allow specific headers (optional)
+};
 
-//Middlewares
-app.use(cors())
+// Use CORS with options
+app.use(cors(corsOptions));
+
+// Middleware
 app.use(clerkMiddleware())
 
-
-
-//Routes
+// Routes
 app.get('/', (req, res) => res.send("API Working"))
 app.post('/clerk', express.json(), clerkWebhooks)
 app.use('/educator', express.json(), educatorRouter)
-//Port 
 
+// Port 
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
-})  //
+})
